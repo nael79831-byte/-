@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUREL — Luxury Fashion House</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'DM Sans', Arial, sans-serif; }
+        ::selection { background: #ded9d0; color: #171717; }
+        .serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+        .thin-rule { height: 1px; background: #e9e7e3; }
+        .rail-bg { background: linear-gradient(180deg, #faf9f7, #f2f0ed); }
+        .shelf-bg { background: linear-gradient(180deg, #faf9f8, #efede9); }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        .slide-up { animation: slideUp 0.6s ease-out; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        const clothes = Array.from({ length: 30 }, (_, i) => {
+            const types = ["Shirts", "T-Shirts", "Pants"];
+            const type = types[i % 3];
+            const colors = ["Chalk", "Noir", "Oat", "Stone", "Ink", "Ivory", "Mushroom", "Ash"];
+            const color = colors[(i * 3 + 1) % colors.length];
+            const names = ["The Atelier", "Essential", "Sculpted", "Soft Form", "The Signature", "Modern Heirloom"];
+            return { id: `c${i + 1}`, name: `${names[i % names.length]} ${type.slice(0, -1)}`, type, color, price: type === "Pants" ? 390 + (i % 4) * 35 : 290 + (i % 5) * 25, image: i + 1 };
+        });
+
+        const shoes = Array.from({ length: 15 }, (_, i) => ({
+            id: `s${i + 1}`,
+            name: ["Forma Loafer", "Serein Runner", "No. 04 Derby", "Column Sandal", "The Evening Pump"][i % 5] + (i > 4 ? ` ${String(i + 1).padStart(2, "0")}` : ""),
+            color: ["Polished black", "Warm ivory", "Espresso suede", "Soft stone", "Deep oxblood"][i % 5],
+            price: 580 + (i % 4) * 65,
+            image: i + 31
+        }));
+
+        const scents = Array.from({ length: 20 }, (_, i) => ({
+            id: `p${i + 1}`,
+            name: ["Afterlight", "Still No. 8", "Pale Cedar", "Sunday in June", "Velvet Hour"][i % 5] + (i > 4 ? ` — ${i + 1}` : ""),
+            notes: ["Iris · White musk · Cedar", "Bergamot · Fig · Amber", "Rose · Saffron · Sandalwood", "Neroli · Vetiver · Skin musk"][i % 4],
+            description: "A quiet composition that lingers like a beautiful memory.",
+            price: 220 + (i % 4) * 30,
+            image: i + 46
+        }));
+
+        function ProductArt({ kind = "clothing", index = 1 }) {
+            const id = `${kind}-${index}`;
+            const palette = ["#e5e0d8", "#171717", "#c6b9a7", "#a9a59d", "#ede9e1", "#756b60", "#d6d2cb", "#383432"];
+            const fill = palette[index % palette.length];
+
+            if (kind === "shoe") return (
+                <svg viewBox="0 0 360 250" className="w-full h-full">
+                    <defs><linearGradient id={id} x1="0" x2="1" y1="0" y2="1"><stop stopColor={fill}/><stop offset="1" stopColor="#8e867b"/></linearGradient></defs>
+                    <ellipse cx="184" cy="209" rx="130" ry="12" fill="#000" opacity=".07"/>
+                    <path d="M53 167c29-4 48-12 70-39 12-14 25-26 37-24 19 3 25 26 42 36 21 12 69 22 94 36 12 7 17 21 10 30-6 8-21 10-42 10H84c-29 0-45-8-47-22-1-12 5-23 16-27z" fill={`url(#${id})`} stroke="#5e574f" strokeWidth="2"/>
+                    <path d="M47 190c45 7 105 5 160 6 39 1 75-1 101-10" fill="none" stroke="#f3f0eb" strokeWidth="5"/>
+                </svg>
+            );
+
+            if (kind === "perfume") return (
+                <svg viewBox="0 0 300 360" className="w-full h-full">
+                    <defs>
+                        <linearGradient id={id} x1="0" x2="1"><stop stopColor="#f7f5ef" stopOpacity=".92"/><stop offset=".35" stopColor="#fff" stopOpacity=".54"/><stop offset=".7" stopColor="#d8d0c4" stopOpacity=".8"/><stop offset="1" stopColor="#fff" stopOpacity=".65"/></linearGradient>
+                        <linearGradient id={`${id}-l`} x1="0" x2="0" y1="0" y2="1"><stop stopColor="#d6c7ad" stopOpacity=".2"/><stop offset="1" stopColor="#9d8260" stopOpacity=".42"/></linearGradient>
+                    </defs>
+                    <ellipse cx="150" cy="324" rx="74" ry="11" fill="#000" opacity=".07"/>
+                    <rect x="126" y="43" width="48" height="40" rx="4" fill="#b7aa96"/>
+                    <rect x="133" y="29" width="34" height="20" rx="3" fill="#242321"/>
+                    <path d="M104 82h92c10 0 18 9 18 20v190c0 14-11 25-25 25h-78c-14 0-25-11-25-25V102c0-11 8-20 18-20z" fill={`url(#${id})`} stroke="#c8c0b3" strokeWidth="2"/>
+                    <path d="M96 185h108v106c0 12-10 22-22 22h-64c-12 0-22-10-22-22z" fill={`url(#${id}-l)`}/>
+                    <rect x="111" y="151" width="78" height="77" fill="#f8f6f1" fillOpacity=".85"/>
+                    <text x="150" y="181" textAnchor="middle" fontFamily="Georgia" fontSize="12" letterSpacing="3" fill="#292723">AUREL</text>
+                    <text x="150" y="201" textAnchor="middle" fontFamily="Georgia" fontSize="8" letterSpacing="2" fill="#5d564d">PARFUM</text>
+                </svg>
+            );
+
+            const isPants = index % 3 === 2;
+            const isTee = index % 3 === 1;
+            return (
+                <svg viewBox="0 0 340 420" className="w-full h-full">
+                    <defs><linearGradient id={id} x1="0" x2="1" y1="0" y2="1"><stop stopColor={fill}/><stop offset="1" stopColor={fill} stopOpacity=".78"/></linearGradient></defs>
+                    <path d="M71 63l54-25h90l54 25 39 91-44 16-23-49v236H99V121l-23 49-44-16z" fill={`url(#${id})`} stroke="#aaa49a" strokeWidth="1.4"/>
+                    {!isPants && <><path d="M125 38l45 55 45-55M170 93v270" fill="none" stroke="#b8b2a9" strokeWidth="1.5"/><path d="M153 95l17 22 17-22" fill="none" stroke="#b8b2a9" strokeWidth="1.4"/></>}
+                    {isPants && <><path d="M75 47l-5 316h86l14-170 14 170h86l-5-316" fill={`url(#${id})`} stroke="#aaa49a" strokeWidth="1.4"/><path d="M72 85h197M170 192v170" stroke="#b9b3aa" strokeWidth="1.5"/></>}
+                </svg>
+            );
+        }
+        function App() {
+            const [entered, setEntered] = useState(false);
+            const [active, setActive] = useState("HOME");
+            const [selected, setSelected] = useState(null);
+            const [cart, setCart] = useState([]);
+            const [cartOpen, setCartOpen] = useState(false);
+            const [mobileMenu, setMobileMenu] = useState(false);
+            const [size, setSize] = useState("M");
+            const [searchOpen, setSearchOpen] = useState(false);
+            const [query, setQuery] = useState("");
+            const [checkout, setCheckout] = useState(false);
+
+            const cartCount = cart.reduce((s, i) => s + i.qty, 0);
+            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const nav = ["CLOTHING", "SHOES", "PERFUME", "FRIDAY OFFERS"];
+            const allProducts = [...clothes, ...shoes, ...scents];
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+
+            const go = (page) => { setActive(page); setSelected(null); setMobileMenu(false); setCheckout(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+            const addToCart = (p) => { setCart(prev => { const f = prev.find(i => i.id === p.id); return f ? prev.map(i => i.id === p.id ? { ...i, qty: i.qty + 1 } : i) : [...prev, { ...p, qty: 1, size: p.type ? size : undefined }]; }); setCartOpen(true); };
+            const updateQty = (id, d) => setCart(prev => prev.map(i => i.id === id ? { ...i, qty: i.qty + d } : i).filter(i => i.qty > 0));
+
+            return (
+                <div className="min-h-screen bg-white text-[#171717]">
+                    {!entered && (
+                        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white">
+                            <button onClick={() => setEntered(true)} className="serif text-[38px] tracking-[.35em]">AUREL</button>
+                            <p className="mt-4 text-[10px] tracking-[.3em] text-[#888]">A STUDY IN FORM</p>
+                        </div>
+                    )}
+
+                    {entered && <>
+                        <div className="bg-[#171717] text-white text-center text-[9px] tracking-[.2em] py-[9px]">COMPLIMENTARY SHIPPING ON ORDERS OVER $500</div>
+                        
+                        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md">
+                            <div className="h-[78px] md:h-[88px] px-5 md:px-12 flex items-center justify-between border-b border-[#efeeec]">
+                                <button className="md:hidden p-2" onClick={() => setMobileMenu(!mobileMenu)}>☰</button>
+                                <nav className="hidden md:flex items-center gap-7 text-[9px] tracking-[.18em]">
+                                    {nav.map(n => <button key={n} className={`hover:opacity-50 ${active === n ? "underline" : ""}`} onClick={() => go(n)}>{n}</button>)}
+                                </nav>
+                                <button onClick={() => go("HOME")} className="absolute left-1/2 -translate-x-1/2 serif text-[27px] md:text-[32px] tracking-[.25em]">AUREL</button>
+                                <div className="flex items-center gap-4">
+                                    <button onClick={() => setSearchOpen(true)}>🔍</button>
+                                    <button className="relative" onClick={() => setCartOpen(true)}>
+                                        🛍️
+                                        {cartCount > 0 && <span className="absolute -right-2 -top-2 w-4 h-4 rounded-full bg-black text-white text-[9px] flex items-center justify-center">{cartCount}</span>}
+                                    </button>
+                                </div>
+                            </div>
+                            {mobileMenu && (
+                                <div className="md:hidden border-b px-6 py-4">
+                                    {nav.map(n => <button key={n} className="block py-2 text-[10px] tracking-[.2em]" onClick={() => go(n)}>{n}</button>)}
+                                </div>
+                            )}
+                        </header>
+
+                        <main>
+                            {active === "HOME" && (
+                                <>
+                                    <section className="relative h-[76vh] min-h-[520px] bg-[#efede9] flex items-end p-8 md:p-12">
+                                        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 72% 36%,#dbd6cd 0%,#c8c1b7 36%,#a9a39b 100%)" }}/>
+                                        <div className="relative text-white max-w-[500px]">
+                                            <p className="text-[9px] tracking-[.3em] mb-5">THE AUTUMN / WINTER EDIT</p>
+                                            <h1 className="serif text-[56px] md:text-[83px] leading-[.91]">A quieter<br/>kind of presence.</h1>
+                                            <button onClick={() => go("CLOTHING")} className="mt-8 border border-white/70 px-7 py-3 text-[9px] tracking-[.2em] hover:bg-white hover:text-black">DISCOVER THE EDIT →</button>
+                                        </div>
+                                    </section>
+
+                                    <section className="grid md:grid-cols-2">
+                                        {[{ name: "CLOTHING", page: "CLOTHING" }, { name: "SHOES", page: "SHOES" }, { name: "PERFUME", page: "PERFUME" }, { name: "FRIDAY OFFERS", page: "FRIDAY OFFERS" }].map(c => (
+                                            <button key={c.page} onClick={() => go(c.page)} className="h-[430px] md:h-[570px] bg-[#eee] flex items-end p-8 hover:bg-[#ddd] transition-colors">
+                                                <h3 className="serif text-[34px]">{c.name}</h3>
+                                            </button>
+                                        ))}
+                                    </section>
+                                </>
+                            )}
+
+                            {nav.includes(active) && !checkout && (
+                                <>
+                                    <section className="px-5 md:px-12 pt-14 pb-9">
+                                        <h1 className="serif text-[47px] md:text-[64px]">{active}</h1>
+                                    </section>
+
+                                    {active === "CLOTHING" && (
+                                        <div className="flex justify-center gap-7 border-y py-4 text-[9px] tracking-[.2em]">
+                                            {["ALL", "SHIRTS", "T-SHIRTS", "PANTS"].map(t => (
+                                                <button key={t} onClick={() => setQuery(t === "ALL" ? "" : t === "T-SHIRTS" ? "T-Shirt" : t.slice(0, -1))}>{t}</button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <section className="px-5 md:px-12 py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
+                                        {(active === "CLOTHING" ? clothes.filter(p => !query || p.name.toLowerCase().includes(query.toLowerCase())) : active === "SHOES" ? shoes : active === "PERFUME" ? scents : [...clothes.slice(0, 4), ...shoes.slice(0, 4), ...scents.slice(0, 4)]).map(p => (
+                                            <button key={p.id} onClick={() => setSelected(p)} className="text-left group">
+                                                <div className="aspect-[.79] bg-[#f5f3ef] flex items-center justify-center mb-3">
+                                                    <div className="w-[77%] h-[88%]">
+                                                        <ProductArt kind={p.type ? "clothing" : p.notes ? "perfume" : "shoe"} index={p.image}/>
+                                                    </div>
+                                                </div>
+                                                <p className="serif text-[18px]">{p.name}</p>
+                                                <p className="text-[10px] text-[#888] mt-1">${p.price}</p>
+                                            </button>
+                                        ))}
+                                    </section>
+                                </>
+                            )}
+
+                            {checkout && (
+                                <section className="max-w-[1120px] mx-auto px-5 md:px-10 py-14">
+                                    <button onClick={() => setCheckout(false)} className="text-[9px] tracking-[.2em] mb-10">← BACK</button>
+                                    <h1 className="serif text-5xl">Checkout</h1>
+                                    <div className="grid md:grid-cols-[1fr_360px] gap-14 mt-12">
+                                        <form className="space-y-7" onSubmit={e => { e.preventDefault(); alert("Order placed!"); setCart([]); setCheckout(false); go("HOME"); }}>
+                                            <input required type="email" placeholder="Email" className="w-full border-b py-3 text-[12px] outline-none"/>
+                                            <input required placeholder="Address" className="w-full border-b py-3 text-[12px] outline-none"/>
+                                            <input required placeholder="Card number" className="w-full border-b py-3 text-[12px] outline-none"/>
+                                            <button type="submit" className="w-full bg-black text-white py-4 text-[10px] tracking-[.25em]">PLACE ORDER</button>
+                                        </form>
+                                        <div className="bg-[#f8f7f5] p-8">
+                                            <h2 className="text-[10px] tracking-[.2em] mb-6">ORDER SUMMARY</h2>
+                                            {cart.map(item => <div key={item.id} className="flex justify-between text-[11px] mb-2"><span>{item.name} × {item.qty}</span><span>${item.price * item.qty}</span></div>)}
+                                            <div className="thin-rule my-4"/>
+                                            <div className="flex justify-between serif text-[18px]"><span>Total</span><span>${total}</span></div>
+                                        </div>
+                                    </div>
+                                </section>
+                            )}
+                        </main>
+                        {/* PRODUCT MODAL */}
+                        {selected && (
+                            <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+                                <button onClick={() => setSelected(null)} className="fixed top-6 right-6 z-10 text-2xl">✕</button>
+                                <div className="max-w-[1200px] mx-auto px-5 md:px-10 py-16 grid md:grid-cols-2 gap-12">
+                                    <div className="aspect-[.79] bg-[#f5f3ef] flex items-center justify-center">
+                                        <div className="w-[77%] h-[88%]">
+                                            <ProductArt kind={selected.type ? "clothing" : selected.notes ? "perfume" : "shoe"} index={selected.image}/>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col justify-center">
+                                        <h1 className="serif text-[42px] mb-4">{selected.name}</h1>
+                                        <p className="text-[22px] mb-6">${selected.price}</p>
+                                        <p className="text-[12px] text-[#777] mb-8">{selected.description || "A considered piece from the Aurel collection."}</p>
+                                        {selected.type && (
+                                            <div className="mb-8">
+                                                <p className="text-[9px] tracking-[.2em] mb-3">SIZE</p>
+                                                <div className="flex gap-2">
+                                                    {["XS", "S", "M", "L", "XL"].map(s => (
+                                                        <button key={s} onClick={() => setSize(s)} className={`w-12 h-12 border text-[10px] ${size === s ? "bg-black text-white" : ""}`}>{s}</button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        <button onClick={() => addToCart(selected)} className="bg-black text-white py-4 text-[10px] tracking-[.25em]">ADD TO BAG</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* CART DRAWER */}
+                        {cartOpen && (
+                            <>
+                                <div className="fixed inset-0 bg-black/30 z-50" onClick={() => setCartOpen(false)}/>
+                                <div className="fixed right-0 top-0 bottom-0 w-full md:w-[420px] bg-white z-50 flex flex-col">
+                                    <div className="p-6 border-b flex justify-between">
+                                        <h2 className="serif text-[24px]">Bag ({cartCount})</h2>
+                                        <button onClick={() => setCartOpen(false)}>✕</button>
+                                    </div>
+                                    <div className="flex-1 overflow-y-auto p-6">
+                                        {cart.length === 0 ? <p className="text-center text-[12px] text-[#888] mt-12">Your bag is empty.</p> : (
+                                            cart.map(item => (
+                                                <div key={item.id} className="flex gap-4 mb-6">
+                                                    <div className="w-20 h-24 bg-[#f5f3ef] flex items-center justify-center">
+                                                        <div className="w-[70%] h-[80%]">
+                                                            <ProductArt kind={item.type ? "clothing" : item.notes ? "perfume" : "shoe"} index={item.image}/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="serif text-[16px]">{item.name}</p>
+                                                        <p className="text-[10px] text-[#888] mt-1">{item.size || item.color}</p>
+                                                        <p className="text-[12px] mt-2">${item.price}</p>
+                                                        <div className="flex items-center gap-3 mt-3">
+                                                            <button onClick={() => updateQty(item.id, -1)} className="w-6 h-6 border">-</button>
+                                                            <span className="text-[11px]">{item.qty}</span>
+                                                            <button onClick={() => updateQty(item.id, 1)} className="w-6 h-6 border">+</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                    {cart.length > 0 && (
+                                        <div className="p-6 border-t">
+                                            <div className="flex justify-between mb-4 serif text-[20px]"><span>Total</span><span>${total}</span></div>
+                                            <button onClick={() => { setCartOpen(false); setCheckout(true); }} className="w-full bg-black text-white py-4 text-[10px] tracking-[.25em]">CHECKOUT</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
+
+                        {/* SEARCH MODAL */}
+                        {searchOpen && (
+                            <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+                                <div className="max-w-[800px] mx-auto px-5 md:px-10 py-16">
+                                    <div className="flex justify-between mb-10">
+                                        <h2 className="serif text-[32px]">Search</h2>
+                                        <button onClick={() => { setSearchOpen(false); setQuery(""); }}>✕</button>
+                                    </div>
+                                    <input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder="Search..." className="w-full border-b-2 border-black py-4 text-[18px] outline-none mb-10"/>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                        {filtered.slice(0, 12).map(p => (
+                                            <button key={p.id} onClick={() => { setSelected(p); setSearchOpen(false); }} className="text-left">
+                                                <div className="aspect-[.79] bg-[#f5f3ef] flex items-center justify-center mb-3">
+                                                    <div className="w-[70%] h-[80%]">
+                                                        <ProductArt kind={p.type ? "clothing" : p.notes ? "perfume" : "shoe"} index={p.image}/>
+                                                    </div>
+                                                </div>
+                                                <p className="serif text-[16px]">{p.name}</p>
+                                                <p className="text-[10px] text-[#888] mt-1">${p.price}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* FOOTER */}
+                        <footer className="bg-[#171717] text-white mt-24">
+                            <div className="max-w-[1200px] mx-auto px-5 md:px-10 py-16">
+                                <div className="grid md:grid-cols-4 gap-10 mb-12">
+                                    <div>
+                                        <p className="serif text-[24px] tracking-[.15em] mb-4">AUREL</p>
+                                        <p className="text-[10px] text-white/60">Objects of quiet distinction.</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] tracking-[.2em] mb-4">SHOP</p>
+                                        {nav.map(n => <button key={n} onClick={() => go(n)} className="block text-[10px] text-white/70 mb-2">{n}</button>)}
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] tracking-[.2em] mb-4">INFO</p>
+                                        <p className="text-[10px] text-white/70 mb-2">About</p>
+                                        <p className="text-[10px] text-white/70 mb-2">Contact</p>
+                                        <p className="text-[10px] text-white/70">Shipping</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] tracking-[.2em] mb-4">NEWSLETTER</p>
+                                        <input placeholder="Email" className="w-full bg-transparent border-b border-white/30 py-2 text-[11px] outline-none"/>
+                                    </div>
+                                </div>
+                                <p className="text-[9px] text-white/50 text-center">© 2024 AUREL. All rights reserved.</p>
+                            </div>
+                        </footer>
+                    </>}
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+    </script>
+</body>
+</html>
